@@ -41,8 +41,10 @@ const Select = React.createClass({
 		noResultsText: React.PropTypes.string,      // placeholder displayed when there are no matching search results
 		onBlur: React.PropTypes.func,               // onBlur handler: function (event) {}
 		onChange: React.PropTypes.func,             // onChange handler: function (newValue) {}
+		onEnter: React.PropTypes,func,              // onEnter handler: function(event) {} (respond when keycode is 13)
 		onFocus: React.PropTypes.func,              // onFocus handler: function (event) {}
-		onInputChange: React.PropTypes.func,        // onInputChange handler: function (inputValue) {}
+		onInputChange: React.PropTypes.func,        // onInputChange handler: function (inputValue) {},
+		onKeyDown: React.PropTypes.func,            // onKeyDown handler: function(event) {}
 		onValueClick: React.PropTypes.func,         // onClick handler for value labels: function (value, event) {}
 		onMenuScrollToBottom: React.PropTypes.func, // fires when the menu is scrolled to the bottom; can be used to paginate options
 		optionComponent: React.PropTypes.func,      // option component to render in dropdown
@@ -225,7 +227,11 @@ const Select = React.createClass({
 				this.selectFocusedOption();
 			break;
 			case 13: // enter
-				if (!this.state.isOpen) return;
+				if (!this.state.isOpen) {
+					if (typeof(this.props.onEnter) === 'function') {
+						this.props.onEnter(event);
+					}
+				};
 				this.selectFocusedOption();
 			break;
 			case 27: // escape
@@ -251,6 +257,9 @@ const Select = React.createClass({
 			// 	}
 			// break;
 			default: return;
+		}
+		if (typeof(this.props.onKeyDown) === 'function') {
+			this.props.onKeyDown(event).bind(this);
 		}
 		event.preventDefault();
 	},
